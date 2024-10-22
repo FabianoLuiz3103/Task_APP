@@ -3,14 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:todo_app/pages/home/home_page.dart';
 import 'package:todo_app/providers/task_group_provider.dart';
+import 'package:todo_app/providers/task_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
-    url: 'https://pclxmgtpkfoibmegugtd.supabase.co',
+    url: 'https://cdtnxamuvfvmgjmbcwcu.supabase.co',
     anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjbHhtZ3Rwa2ZvaWJtZWd1Z3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjcxMDM2NjUsImV4cCI6MjA0MjY3OTY2NX0.cxtdnGrNS8ve89F3ZL60VV5CvvA9WrV6piRfuaOUIcU',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNkdG54YW11dmZ2bWdqbWJjd2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjgzODg3MTYsImV4cCI6MjA0Mzk2NDcxNn0.8L_YwI6ppJZShswPiVBLR7bh93K6IDsFzQwgoTC_KkU',
   );
 
   runApp(MultiProvider(
@@ -18,6 +19,10 @@ Future<void> main() async {
       ChangeNotifierProvider(
         create: (_) => TaskGroupProvider()..listTaskGroups(),
       ),
+
+      ChangeNotifierProvider(
+        create: (_) => TaskProvider()
+        ),
     ],
     child: const MyApp(),
   ));
