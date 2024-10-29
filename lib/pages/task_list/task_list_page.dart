@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/pages/task_create/task_create_page.dart';
+import 'package:todo_app/pages/task_list/widgets/delete_task.dart';
 import 'package:todo_app/pages/task_list/widgets/task_widget.dart';
 import 'package:todo_app/providers/task_group_provider.dart';
 import 'package:todo_app/providers/task_provider.dart';
@@ -14,10 +15,11 @@ class TaskListPage extends StatefulWidget {
 
 class _TaskListPageState extends State<TaskListPage> {
   late final TaskGroupProvider taskGroupProvider;
+  late final TaskProvider taskProvider;
 
   @override
   void initState() {
-    final taskProvider = context.read<TaskProvider>();
+    taskProvider = context.read<TaskProvider>();
     taskGroupProvider = context.read<TaskGroupProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       taskProvider.listTasksByGroup(taskGroupProvider.selectedTaskGroup!.id);
@@ -52,10 +54,40 @@ class _TaskListPageState extends State<TaskListPage> {
                     itemCount: taskProvider.tasks.length,
                     itemBuilder: (context, index) {
                       final task = taskProvider.tasks[index];
-                      return TaskWidget(
-                        task: task,
-                        color:
-                            Color(taskGroupProvider.selectedTaskGroup!.color),
+                      return Dismissible(
+                        key: Key(task.id),
+                        background: const DeleteTask(),
+                        onDismissed: (direction) => {
+                          if(direction == DismissDirection.startToEnd){
+                            taskProvider.deleteTask(task.id)
+                          }
+                        },
+                        confirmDismiss: (direction) {
+                          //if(direction == DismissDirection.startToEnd){
+                            return showDialog(context: context, builder: (context){
+
+                               return  AlertDialog(
+                              title: Text('Delete Task'),
+                              content: Text('Are you sure you want delete task'),
+                              actions: [
+                                TextButton(onPressed: (){
+                                  Navigator.of(context).pop(false);
+                                }, child: const Text('No')),
+                                TextButton(onPressed: (){
+                                  Navigator.of(context).pop(true);
+                                }, child: const Text('Yes'))
+                              ],
+                            );
+                            });
+                           
+                          //}
+                          
+                        },
+                        child: TaskWidget(
+                          task: task,
+                          color:
+                              Color(taskGroupProvider.selectedTaskGroup!.color),
+                        ),
                       );
                     })),
           ],
