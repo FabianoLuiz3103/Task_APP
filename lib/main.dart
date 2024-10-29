@@ -19,10 +19,9 @@ Future<void> main() async {
       ChangeNotifierProvider(
         create: (_) => TaskGroupProvider()..listTaskGroups(),
       ),
-
       ChangeNotifierProvider(
-        create: (_) => TaskProvider()
-        ),
+        create: (_) => TaskProvider(),
+      ),
     ],
     child: const MyApp(),
   ));

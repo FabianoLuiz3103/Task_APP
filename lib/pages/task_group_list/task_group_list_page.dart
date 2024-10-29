@@ -21,25 +21,26 @@ class TaskGroupListPage extends StatelessWidget {
       body: Consumer<TaskGroupProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
           return ListView.builder(
-              itemCount: provider.taskGroups.length,
-              itemBuilder: (context, index) {
-                return  ListTile(
-                    title: Text(provider.taskGroups[index].name),
-
-                    onTap: (){
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => TaskListPage(groupId: provider.taskGroups[index].id)),
-                    );
-                    },
-                );
-              });
+            itemCount: provider.taskGroups.length,
+            itemBuilder: (context, index) {
+              final taskGroup = provider.taskGroups[index];
+              return ListTile(
+                title: Text(taskGroup.name),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (BuildContext context) {
+                      context.read<TaskGroupProvider>().selectedTaskGroup =
+                          taskGroup;
+                      return const TaskListPage();
+                    }),
+                  );
+                },
+              );
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
