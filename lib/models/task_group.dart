@@ -70,4 +70,5 @@ class TaskGroupWithCounts {
         totalTasks: totalTasks ?? this.totalTasks,
         completedTasks: completedTasks ?? this.completedTasks,
       );
+
 }

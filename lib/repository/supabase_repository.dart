@@ -43,13 +43,28 @@ class SupabaseRepository {
     return response.map((task) => Task.fromMap(task)).toList();
   }
 
-  Future<void> createTask(Task task) async {
+  Future createTask(Task task) async {
     final supabase = Supabase.instance.client;
     await supabase.from('tasks').insert(task.toMap());
   }
 
-  Future<void> deleteTask(String id) async {
+  Future deleteTask(String taskId) async {
     final supabase = Supabase.instance.client;
-    await supabase.from('tasks').delete().eq('id', id);
+    await supabase.from('tasks').delete().eq('id', taskId);
+  }
+
+  Future deleteTaskGroup(String taskGroupId) async {
+    final supabase = Supabase.instance.client;
+    await supabase.from('task_groups').delete().eq('id', taskGroupId);
+  }
+
+  Future createTaskGroup(TaskGroup taskGroup) async {
+    final supabase = Supabase.instance.client;
+    await supabase.from('task_groups').insert(taskGroup.toMap());
+  }
+
+  Future updateTask(Task task) async {
+    final supabase = Supabase.instance.client;
+    await supabase.from('tasks').update(task.toMap()).eq('id', task.id);
   }
 }

@@ -1,11 +1,7 @@
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/models/task_group.dart';
 import 'package:todo_app/models/task_model.dart';
-import 'package:todo_app/providers/task_group_provider.dart';
 import 'package:todo_app/providers/task_provider.dart';
 
 class TaskCreatePage extends StatefulWidget {
@@ -37,14 +33,17 @@ class _TaskCreatePageState extends State<TaskCreatePage> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(18.0),
-          child: Column(
-            children: [
-              _buildTitle(),
-              const SizedBox(height: 20),
-              _buildSubtitle(),
-              const SizedBox(height: 20),
-              _buildDatePicker(),
-            ],
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                _buildTitle(),
+                const SizedBox(height: 20),
+                _buildSubtitle(),
+                const SizedBox(height: 20),
+                _buildDatePicker(),
+              ],
+            ),
           ),
         ),
       ),
@@ -149,21 +148,19 @@ class _TaskCreatePageState extends State<TaskCreatePage> {
   }
 
   Future<void> _submitForm() async {
-   
-      final title = titleController.text;
-      final subtitle = subtitleController.text;
-
+    if (_formKey.currentState!.validate()) {
       final task = Task.create(
-        title: title,
-        subtitle: subtitle,
-        date: date, 
-        groupId: widget.groupId);
-      
-      context.read<TaskProvider>().createTask(task);
+        title: titleController.text,
+        subtitle: subtitleController.text,
+        date: date,
+        groupId: widget.groupId,
+      );
 
-      Navigator.pop(context);
+      await context.read<TaskProvider>().createTask(task);
+
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
     }
-
- 
-  
+  }
 }

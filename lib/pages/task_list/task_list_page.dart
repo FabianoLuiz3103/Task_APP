@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/pages/task_create/task_create_page.dart';
 import 'package:todo_app/pages/task_list/widgets/delete_task.dart';
 import 'package:todo_app/pages/task_list/widgets/task_widget.dart';
+import 'package:todo_app/pages/task_list/widgets/tasks_summary_widget.dart';
 import 'package:todo_app/providers/task_group_provider.dart';
 import 'package:todo_app/providers/task_provider.dart';
 
@@ -15,11 +16,10 @@ class TaskListPage extends StatefulWidget {
 
 class _TaskListPageState extends State<TaskListPage> {
   late final TaskGroupProvider taskGroupProvider;
-  late final TaskProvider taskProvider;
 
   @override
   void initState() {
-    taskProvider = context.read<TaskProvider>();
+    final taskProvider = context.read<TaskProvider>();
     taskGroupProvider = context.read<TaskGroupProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       taskProvider.listTasksByGroup(taskGroupProvider.selectedTaskGroup!.id);
@@ -49,6 +49,17 @@ class _TaskListPageState extends State<TaskListPage> {
 
         return Column(
           children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+              child: TasksSummaryWidget(),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Divider(
+                color: Colors.grey.shade300,
+                height: 1,
+              ),
+            ),
             Expanded(
                 child: ListView.builder(
                     itemCount: taskProvider.tasks.length,
@@ -57,31 +68,34 @@ class _TaskListPageState extends State<TaskListPage> {
                       return Dismissible(
                         key: Key(task.id),
                         background: const DeleteTask(),
-                        onDismissed: (direction) => {
-                          if(direction == DismissDirection.startToEnd){
-                            taskProvider.deleteTask(task.id)
-                          }
+                        onDismissed: (direction) {
+                          taskProvider.deleteTask(task.id);
                         },
                         confirmDismiss: (direction) {
-                          //if(direction == DismissDirection.startToEnd){
-                            return showDialog(context: context, builder: (context){
-
-                               return  AlertDialog(
-                              title: Text('Delete Task'),
-                              content: Text('Are you sure you want delete task'),
-                              actions: [
-                                TextButton(onPressed: (){
-                                  Navigator.of(context).pop(false);
-                                }, child: const Text('No')),
-                                TextButton(onPressed: (){
-                                  Navigator.of(context).pop(true);
-                                }, child: const Text('Yes'))
-                              ],
-                            );
-                            });
-                           
-                          //}
-                          
+                          return showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Delete Task'),
+                                content: const Text(
+                                    'Are you sure you want to delete this task?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(false);
+                                    },
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop(true);
+                                    },
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                         child: TaskWidget(
                           task: task,
@@ -106,10 +120,5 @@ class _TaskListPageState extends State<TaskListPage> {
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }
